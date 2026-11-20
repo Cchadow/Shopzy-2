@@ -1,0 +1,12 @@
+{
+  "name": "shopzy-haiti",
+  "version": "1.0.0",
+  "description": "Shopzy Haiti mobile webview application with splash screen and offline handling",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node server.js",
+    "build": "echo 'Applet built successfully'",
+    "start": "node server.js"
+  },
+  "dependencies": {}
+}

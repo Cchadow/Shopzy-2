@@ -1,0 +1,6 @@
+{
+  "name": "Shopzy Haiti",
+  "description": "Shopzy Haiti e-commerce store with seamless WebView integration, instant splash screen, real-time updates, and offline state handling.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

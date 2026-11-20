@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">Shopzy Haiti</string>
+    <string name="splash_title">Shopzy</string>
+    <string name="offline_title">Vous n\'êtes pas connecté à internet 😪</string>
+    <string name="offline_desc">Vérifiez votre connexion Wi-Fi ou vos données mobiles puis réessayez.</string>
+    <string name="retry_button">Réessayer</string>
+    <string name="refresh">Refresh</string>
+    <string name="home">Home</string>
+    <string name="share">Share</string>
+    <string name="shopzy_url">https://shopzyhaiti.lovable.app</string>
+    <string name="splash_tagline">Your Premier Online Marketplace</string>
+    <string name="checking_connection">Vérification de la connexion…</string>
+
+    <string name="notification_settings_title">Push Notifications</string>
+    <string name="notification_settings_subtitle">Customize how Shopzy alerts appear on your device</string>
+    <string name="notification_settings_button">Notification settings</string>
+    <string name="notification_permission_granted">Notifications enabled</string>
+    <string name="notification_permission_needed">Permission required to show alerts</string>
+    <string name="notification_enable_action">Allow</string>
+    <string name="notification_open_os_settings">System settings</string>
+    <string name="notification_master_toggle">Receive Website Notifications</string>
+    <string name="notification_master_desc">Bridge live alerts sent from Shopzy Haiti</string>
+    <string name="notification_sound_toggle">Notification Sound</string>
+    <string name="notification_sound_desc">Play an alert tone for incoming updates</string>
+    <string name="notification_vibration_toggle">Vibration</string>
+    <string name="notification_vibration_desc">Vibrate when a new notification arrives</string>
+    <string name="notification_headsup_toggle">Pop-up Banners</string>
+    <string name="notification_headsup_desc">Show floating heads-up alerts on screen</string>
+    <string name="notification_expanded_toggle">Rich Expanded View</string>
+    <string name="notification_expanded_desc">Display full message text and preview artwork</string>
+    <string name="notification_accent_label">Alert Accent Color</string>
+    <string name="notification_test_button">Send Test Notification</string>
+    <string name="notification_customize_action">Customize</string>
+    <string name="notification_test_title">Welcome to Shopzy Haiti</string>
+    <string name="notification_test_body">Push notifications are connected and customized with your selected style.</string>
+</resources>
