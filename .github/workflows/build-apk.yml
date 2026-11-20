@@ -13,32 +13,47 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '21'
 
-      - name: Set up Android SDK & Accept Licenses
-        uses: android-actions/setup-android@v3
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools'
 
-      - name: Accept all Android SDK licenses
-        run: yes | sdkmanager --licenses >/dev/null 2>&1 || true
+      - name: Accept Android SDK licenses & install API 36.1
+        run: |
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
+          sdkmanager "platforms;android-36.1" "build-tools;36.0.0" || sdkmanager "platforms;android-36" "build-tools;36.0.0"
 
       - name: Set up Gradle 9.3.1
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
         with:
           gradle-version: '9.3.1'
+          cache-provider: 'basic'
 
       - name: Prepare environment and debug keystore
         run: |
           if [ ! -f .env ] && [ -f .env.example ]; then
             cp .env.example .env
           fi
-          if [ ! -f debug.keystore ] && [ -f debug.keystore.base64 ]; then
-            base64 -d debug.keystore.base64 > debug.keystore
+          if [ ! -f debug.keystore ]; then
+            if [ -f debug.keystore.base64 ]; then
+              base64 -d debug.keystore.base64 > debug.keystore
+            else
+              keytool -genkeypair -v \
+                -keystore debug.keystore \
+                -storepass android \
+                -alias androiddebugkey \
+                -keypass android \
+                -keyalg RSA -keysize 2048 -validity 10000 \
+                -dname "CN=Android Debug,O=Android,C=US"
+            fi
           fi
 
       - name: Build Debug APK
@@ -48,7 +63,7 @@ jobs:
         run: cp app/build/outputs/apk/debug/app-debug.apk Shopzy-Haiti.apk
 
       - name: Upload APK as Workflow Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Shopzy-Haiti-APK
           path: Shopzy-Haiti.apk
@@ -64,6 +79,7 @@ jobs:
           else
             gh release create latest-apk Shopzy-Haiti.apk \
               --repo "${{ github.repository }}" \
+              --target "${{ github.sha }}" \
               --title "Shopzy Haiti APK" \
               --notes "Latest installable Android APK for Shopzy Haiti (no Google Play Console account required)."
           fi

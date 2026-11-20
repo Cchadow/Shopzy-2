@@ -58,6 +58,7 @@ import com.example.notifications.NotificationSettings
 import com.example.notifications.ShopzyNotificationHelper
 import com.example.notifications.ShopzyWebNotificationBridge
 import com.example.ui.theme.ShopzyOrange
+import java.io.File
 import kotlinx.coroutines.launch
 
 const val SHOPZY_TARGET_URL = "https://shopzyhaiti.lovable.app"
@@ -179,6 +180,18 @@ fun ShopzyWebView(
     }
   }
 
+  DisposableEffect(Unit) {
+    onDispose {
+      webViewRef?.let { wv ->
+        wv.stopLoading()
+        wv.removeJavascriptInterface(ShopzyWebNotificationBridge.JS_INTERFACE_NAME)
+        (wv.parent as? ViewGroup)?.removeView(wv)
+        wv.destroy()
+      }
+      webViewRef = null
+    }
+  }
+
   Box(
     modifier = modifier
       .fillMaxSize()
@@ -187,6 +200,12 @@ fun ShopzyWebView(
   ) {
       AndroidView(
         factory = { ctx ->
+          try {
+            val codeCacheDir = File(ctx.cacheDir, "WebView/Default/HTTP Cache/Code Cache")
+            File(codeCacheDir, "js").mkdirs()
+            File(codeCacheDir, "wasm").mkdirs()
+          } catch (_: Exception) {}
+
           val wv = WebView(ctx).apply {
             layoutParams = ViewGroup.LayoutParams(
               ViewGroup.LayoutParams.MATCH_PARENT,

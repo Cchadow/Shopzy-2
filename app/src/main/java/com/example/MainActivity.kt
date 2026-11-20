@@ -27,8 +27,11 @@ import com.example.ui.components.ShopzyWebView
 import com.example.ui.components.SplashScreen
 import com.example.ui.theme.MyApplicationTheme
 import com.example.util.NetworkUtils
+import java.io.File
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 enum class ScreenState {
   SPLASH,
@@ -89,8 +92,11 @@ fun ShopzyAppRoot(
   var currentScreen by remember { mutableStateOf(ScreenState.SPLASH) }
   var isRetrying by remember { mutableStateOf(false) }
 
-  // Initial Splash Screen display logic (4 seconds) + live network observation
+  // Initial Splash Screen display logic (4 seconds) + pre-warm WebView cache dirs + live network observation
   LaunchedEffect(Unit) {
+    withContext(Dispatchers.IO) {
+      ensureWebViewCacheDirs(context.cacheDir)
+    }
     delay(4000)
     NetworkUtils.observeNetworkState(context).collect { isOnline ->
       currentScreen = if (isOnline) {
@@ -161,5 +167,15 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 fun ShopzyPreview() {
   MyApplicationTheme {
     ShopzyAppRoot()
+  }
+}
+
+private fun ensureWebViewCacheDirs(cacheDir: File) {
+  try {
+    val codeCacheDir = File(cacheDir, "WebView/Default/HTTP Cache/Code Cache")
+    File(codeCacheDir, "js").mkdirs()
+    File(codeCacheDir, "wasm").mkdirs()
+  } catch (_: Exception) {
+    // Non-fatal if cache directory creation is restricted
   }
 }
