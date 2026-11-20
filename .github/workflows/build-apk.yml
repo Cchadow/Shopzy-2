@@ -21,19 +21,28 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      - name: Set up Android SDK & Accept Licenses
+        uses: android-actions/setup-android@v3
+
+      - name: Accept all Android SDK licenses
+        run: yes | sdkmanager --licenses >/dev/null 2>&1 || true
+
       - name: Set up Gradle 9.3.1
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '9.3.1'
 
-      - name: Decode debug signing keystore
+      - name: Prepare environment and debug keystore
         run: |
+          if [ ! -f .env ] && [ -f .env.example ]; then
+            cp .env.example .env
+          fi
           if [ ! -f debug.keystore ] && [ -f debug.keystore.base64 ]; then
             base64 -d debug.keystore.base64 > debug.keystore
           fi
 
       - name: Build Debug APK
-        run: gradle :app:assembleDebug --no-daemon
+        run: gradle :app:assembleDebug --no-daemon --stacktrace
 
       - name: Prepare APK file
         run: cp app/build/outputs/apk/debug/app-debug.apk Shopzy-Haiti.apk
@@ -46,13 +55,15 @@ jobs:
           retention-days: 30
 
       - name: Publish Direct Download Release
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if gh release view latest-apk >/dev/null 2>&1; then
-            gh release upload latest-apk Shopzy-Haiti.apk --clobber
+          if gh release view latest-apk --repo "${{ github.repository }}" >/dev/null 2>&1; then
+            gh release upload latest-apk Shopzy-Haiti.apk --repo "${{ github.repository }}" --clobber
           else
             gh release create latest-apk Shopzy-Haiti.apk \
+              --repo "${{ github.repository }}" \
               --title "Shopzy Haiti APK" \
               --notes "Latest installable Android APK for Shopzy Haiti (no Google Play Console account required)."
           fi
